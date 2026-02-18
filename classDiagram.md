@@ -67,14 +67,20 @@ class IncidentEvent {
     -message: string
 }
 
+class NotificationAttempt {
+    -id: string
+    -alertId: string
+    -userId: string
+    -channel: string
+    -status: string
+    -sentAt: Date
+}
+
 %% Relationships
 Team "1" --> "*" User : contains
 Alert "1" --> "*" IncidentEvent : generates
 Alert "*" --> "1" Team : assigned to
-Alert "*" --> "0..1" User : assigned responder
-AlertStatus --* Alert
-Severity --* Alert
-UserRole --* User
+Alert "1" --> "*" NotificationAttempt : produces
 
 %% ===================== ROUTING =====================
 
@@ -90,6 +96,7 @@ class RoutingEngine {
     +evaluate(alert: Alert): Team
 }
 
+Team "1" --> "*" RoutingRule : defines
 RoutingEngine --> RoutingRule
 RoutingEngine --> Alert
 
@@ -104,7 +111,6 @@ class EscalationPolicy {
 class EscalationLevel {
     -level: number
     -delayMinutes: number
-    -targetUsers: string[]
 }
 
 class EscalationScheduler {
@@ -113,8 +119,9 @@ class EscalationScheduler {
     +triggerNextLevel(alertId: string): void
 }
 
-Team "1" -- "1" EscalationPolicy : defines
+Team "1" -- "1" EscalationPolicy : has
 EscalationPolicy "1" *-- "*" EscalationLevel : contains
+EscalationLevel --> User : notifies
 EscalationScheduler --> EscalationPolicy
 EscalationScheduler --> Alert
 
@@ -125,13 +132,8 @@ class NotificationChannel {
     +send(user: User, message: string): boolean
 }
 
-class EmailChannel {
-    +send(user: User, message: string): boolean
-}
-
-class WebhookChannel {
-    +send(user: User, message: string): boolean
-}
+class EmailChannel
+class WebhookChannel
 
 NotificationChannel <|.. EmailChannel
 NotificationChannel <|.. WebhookChannel
@@ -142,16 +144,11 @@ class NotificationService {
 }
 
 NotificationService --> NotificationChannel
-NotificationService --> Alert
+NotificationService --> NotificationAttempt
 
 %% ===================== SERVICES =====================
 
 class AlertService {
-    -alertRepo: IAlertRepository
-    -routingEngine: RoutingEngine
-    -notificationService: NotificationService
-    -scheduler: EscalationScheduler
-    -eventLog: EventLogService
     +createAlert(dto): Alert
     +acknowledgeAlert(alertId, userId): void
     +resolveAlert(alertId): void
@@ -195,3 +192,4 @@ RoutingEngine --> IRoutingRuleRepository
 NotificationService --> IUserRepository
 EventLogService --> IEventRepository
 ```
+

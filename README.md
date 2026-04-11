@@ -10,11 +10,11 @@ The system simulates real-world tools like PagerDuty by implementing routing rul
 
 | File | Description |
 |----|----|
-| [idea.md](./idea.md) | Project overview and problem statement |
-| [useCaseDiagram.md](./useCaseDiagram.md) | Actors and system capabilities |
-| [sequenceDiagram.md](./sequenceDiagram.md) | End-to-end alert lifecycle |
-| [classDiagram.md](./classDiagram.md) | Object-oriented system design |
-| [ErDiagram.md](./ErDiagram.md) | Database schema and relationships |
+| [idea.md](/diagram/idea.md) | Project overview and problem statement |
+| [useCaseDiagram.md](/diagram/useCaseDiagram.md) | Actors and system capabilities |
+| [sequenceDiagram.md](/diagram/sequenceDiagram.md) | End-to-end alert lifecycle |
+| [classDiagram.md](/diagram/classDiagram.md) | Object-oriented system design |
+| [ErDiagram.md](/diagram/ErDiagram.md) | Database schema and relationships |
 
 ---
 

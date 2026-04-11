@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+dist/
+
+# Environment variables (NEVER push these)
+.env
+.env.local
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

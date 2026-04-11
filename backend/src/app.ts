@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import logger from './shared/utils/logger';
+import userRoutes from './modules/users/user.routes';
 
 const app: Application = express();
 
@@ -21,7 +22,7 @@ const limiter = rateLimit({
 app.use(limiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use('/api/users', userRoutes);
 app.get('/health', (req: Request, res: Response) => {
   logger.info('Health check hit');
   res.status(200).json({

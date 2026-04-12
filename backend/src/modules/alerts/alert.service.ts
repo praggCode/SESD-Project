@@ -51,7 +51,6 @@ export class AlertService {
     });
     logger.info(`New alert created: ${alert.title} | Severity: ${alert.severity}`);
 
-    // Notify all users
     const users = await this.userRepository.findAll();
     await this.notificationService.notify(users as any, alert);
 

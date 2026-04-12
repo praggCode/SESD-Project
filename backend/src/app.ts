@@ -6,6 +6,7 @@ import logger from './shared/utils/logger';
 import userRoutes from './modules/users/user.routes';
 import teamRoutes from './modules/teams/team.routes';
 import alertRoutes from './modules/alerts/alert.routes';
+import escalationPolicyRoutes from './modules/escalation/escalation-policy.routes';
 
 const app: Application = express();
 
@@ -28,6 +29,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/users', userRoutes);
 app.use('/api/teams', teamRoutes);
 app.use('/api/alerts', alertRoutes);
+app.use('/api/escalation-policies', escalationPolicyRoutes);
 app.get('/health', (req: Request, res: Response) => {
   logger.info('Health check hit');
   res.status(200).json({

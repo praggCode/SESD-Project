@@ -2,6 +2,8 @@ import bcrypt from 'bcryptjs';
 import { UserRepository } from './user.repository';
 import { IUser, UserRole } from './user.model';
 import logger from '../../shared/utils/logger';
+import jwt from 'jsonwebtoken';
+import { env } from '../../config/env';
 
 export class UserService {
   private userRepository: UserRepository;
@@ -43,4 +45,35 @@ export class UserService {
     }
     return user;
   }
+  async login(data: {
+    email: string;
+    password: string;
+  }): Promise<{ token: string; user: Partial<IUser> }> {
+    const user = await this.userRepository.findByEmail(data.email);
+    if (!user) {
+      throw new Error('Invalid email or password');
+    }
+
+    const isMatch = await bcrypt.compare(data.password, user.password);
+    if (!isMatch) {
+      throw new Error('Invalid email or password');
+    }
+
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    logger.info(`User logged in: ${user.email}`);
+    return {
+      token,
+      user: {
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    };
+  }
+  
 }

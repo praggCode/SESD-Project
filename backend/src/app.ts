@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import logger from './shared/utils/logger';
 import userRoutes from './modules/users/user.routes';
+import teamRoutes from './modules/teams/team.routes';
 
 const app: Application = express();
 
@@ -23,6 +24,7 @@ app.use(limiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/api/users', userRoutes);
+app.use('/api/teams', teamRoutes);
 app.get('/health', (req: Request, res: Response) => {
   logger.info('Health check hit');
   res.status(200).json({

@@ -1,12 +1,15 @@
-import { AlertRepository } from './alert.repository';
-import { IAlert, AlertStatus, Severity } from './alert.model';
-import { TeamRepository } from '../teams/team.repository';
-import { NotificationService } from '../notifications/notification.service';
-import { UserRepository } from '../users/user.repository';
-import { EscalationPolicyRepository } from '../escalation/escalation-policy.repository';
-import { scheduleEscalation, cancelEscalation } from '../escalation/escalation.scheduler';
-import logger from '../../shared/utils/logger';
-import mongoose from 'mongoose';
+import { AlertRepository } from "./alert.repository";
+import { IAlert, AlertStatus, Severity } from "./alert.model";
+import { TeamRepository } from "../teams/team.repository";
+import { NotificationService } from "../notifications/notification.service";
+import { UserRepository } from "../users/user.repository";
+import { EscalationPolicyRepository } from "../escalation/escalation-policy.repository";
+import {
+  scheduleEscalation,
+  cancelEscalation,
+} from "../escalation/escalation.scheduler";
+import logger from "../../shared/utils/logger";
+import mongoose from "mongoose";
 
 export class AlertService {
   private alertRepository: AlertRepository;
@@ -30,20 +33,19 @@ export class AlertService {
     source: string;
     teamId: string;
   }): Promise<{ alert: IAlert; isDuplicate: boolean }> {
-
     const team = await this.teamRepository.findById(data.teamId);
     if (!team) {
-      throw new Error('Team not found');
+      throw new Error("Team not found");
     }
 
     const duplicate = await this.alertRepository.findOpenDuplicate(
       data.title,
-      data.source
+      data.source,
     );
 
     if (duplicate) {
       await this.alertRepository.incrementDuplicateCount(
-        (duplicate._id as mongoose.Types.ObjectId).toString()
+        (duplicate._id as mongoose.Types.ObjectId).toString(),
       );
       logger.warn(`Duplicate alert received: ${data.title}`);
       return { alert: duplicate, isDuplicate: true };
@@ -53,16 +55,20 @@ export class AlertService {
       ...data,
       teamId: new mongoose.Types.ObjectId(data.teamId),
     });
-    logger.info(`New alert created: ${alert.title} | Severity: ${alert.severity}`);
+    logger.info(
+      `New alert created: ${alert.title} | Severity: ${alert.severity}`,
+    );
 
     const users = await this.userRepository.findAll();
     await this.notificationService.notify(users as any, alert);
 
-    const policy = await this.escalationPolicyRepository.findByTeamId(data.teamId);
+    const policy = await this.escalationPolicyRepository.findByTeamId(
+      data.teamId,
+    );
     if (policy && policy.levels.length > 0) {
       await scheduleEscalation(
         (alert._id as mongoose.Types.ObjectId).toString(),
-        policy.levels[0].delayMinutes
+        policy.levels[0].delayMinutes,
       );
     }
 
@@ -76,7 +82,7 @@ export class AlertService {
   async getAlertById(id: string): Promise<IAlert> {
     const alert = await this.alertRepository.findById(id);
     if (!alert) {
-      throw new Error('Alert not found');
+      throw new Error("Alert not found");
     }
     return alert;
   }
@@ -84,15 +90,11 @@ export class AlertService {
   async acknowledgeAlert(alertId: string, userId: string): Promise<IAlert> {
     const alert = await this.alertRepository.findById(alertId);
     if (!alert) {
-      throw new Error('Alert not found');
+      throw new Error("Alert not found");
     }
 
-    if (alert.status === AlertStatus.ACKNOWLEDGED) {
-      throw new Error('Alert already acknowledged');
-    }
-
-    if (alert.status === AlertStatus.RESOLVED) {
-      throw new Error('Alert already resolved');
+    if (alert.status !== AlertStatus.TRIGGERED) {
+      throw new Error("Only triggered alerts can be acknowledged");
     }
 
     const updated = await this.alertRepository.updateStatus(alertId, {
@@ -101,7 +103,6 @@ export class AlertService {
       acknowledgedAt: new Date(),
     });
 
-    // Cancel escalation timer
     await cancelEscalation(alertId);
 
     logger.info(`Alert acknowledged: ${alertId} by user: ${userId}`);
@@ -111,11 +112,11 @@ export class AlertService {
   async resolveAlert(alertId: string): Promise<IAlert> {
     const alert = await this.alertRepository.findById(alertId);
     if (!alert) {
-      throw new Error('Alert not found');
+      throw new Error("Alert not found");
     }
 
-    if (alert.status === AlertStatus.RESOLVED) {
-      throw new Error('Alert already resolved');
+    if (alert.status !== AlertStatus.ACKNOWLEDGED) {
+      throw new Error("Only acknowledged alerts can be resolved");
     }
 
     const updated = await this.alertRepository.updateStatus(alertId, {

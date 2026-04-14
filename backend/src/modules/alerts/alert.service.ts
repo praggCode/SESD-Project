@@ -3,6 +3,8 @@ import { IAlert, AlertStatus, Severity } from './alert.model';
 import { TeamRepository } from '../teams/team.repository';
 import { NotificationService } from '../notifications/notification.service';
 import { UserRepository } from '../users/user.repository';
+import { EscalationPolicyRepository } from '../escalation/escalation-policy.repository';
+import { scheduleEscalation, cancelEscalation } from '../escalation/escalation.scheduler';
 import logger from '../../shared/utils/logger';
 import mongoose from 'mongoose';
 
@@ -11,12 +13,14 @@ export class AlertService {
   private teamRepository: TeamRepository;
   private notificationService: NotificationService;
   private userRepository: UserRepository;
+  private escalationPolicyRepository: EscalationPolicyRepository;
 
   constructor() {
     this.alertRepository = new AlertRepository();
     this.teamRepository = new TeamRepository();
     this.notificationService = new NotificationService();
     this.userRepository = new UserRepository();
+    this.escalationPolicyRepository = new EscalationPolicyRepository();
   }
 
   async createAlert(data: {
@@ -54,6 +58,14 @@ export class AlertService {
     const users = await this.userRepository.findAll();
     await this.notificationService.notify(users as any, alert);
 
+    const policy = await this.escalationPolicyRepository.findByTeamId(data.teamId);
+    if (policy && policy.levels.length > 0) {
+      await scheduleEscalation(
+        (alert._id as mongoose.Types.ObjectId).toString(),
+        policy.levels[0].delayMinutes
+      );
+    }
+
     return { alert, isDuplicate: false };
   }
 
@@ -88,6 +100,9 @@ export class AlertService {
       acknowledgedBy: userId as any,
       acknowledgedAt: new Date(),
     });
+
+    // Cancel escalation timer
+    await cancelEscalation(alertId);
 
     logger.info(`Alert acknowledged: ${alertId} by user: ${userId}`);
     return updated!;

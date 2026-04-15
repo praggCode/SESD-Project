@@ -70,7 +70,7 @@ export function AlertTable({ alerts, loading, onRefresh }) {
           <TableHead>Severity</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Created</TableHead>
-          <TableHead className="pr-4 text-right">Actions</TableHead>
+          <TableHead className="pr-4 text-right w-[60px]"></TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>

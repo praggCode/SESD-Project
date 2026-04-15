@@ -53,6 +53,7 @@ export class AlertService {
 
     const alert = await this.alertRepository.create({
       ...data,
+      status: AlertStatus.TRIGGERED,
       teamId: new mongoose.Types.ObjectId(data.teamId),
     });
     logger.info(

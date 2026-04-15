@@ -2,10 +2,19 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { MoreVerticalIcon, CheckCircleIcon, ShieldCheckIcon, EyeIcon } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function ActionButtons({ alert, onActionComplete }) {
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   async function handleAction(action) {
     setLoading(true);
@@ -42,42 +51,56 @@ export function ActionButtons({ alert, onActionComplete }) {
     }
   }
 
-  if (alert.status === "TRIGGERED") {
-    return (
-      <Button
-        size="sm"
-        variant="outline"
-        disabled={loading}
-        onClick={(e) => {
-          e.stopPropagation();
-          handleAction("acknowledge");
-        }}
-        className="text-amber-600 border-amber-500/30 hover:bg-amber-500/10 dark:text-amber-400"
-      >
-        {loading ? "Working…" : "Acknowledge"}
-      </Button>
-    );
-  }
-
-  if (alert.status === "ACKNOWLEDGED") {
-    return (
-      <Button
-        size="sm"
-        variant="outline"
-        disabled={loading}
-        onClick={(e) => {
-          e.stopPropagation();
-          handleAction("resolve");
-        }}
-        className="text-emerald-600 border-emerald-500/30 hover:bg-emerald-500/10 dark:text-emerald-400"
-      >
-        {loading ? "Working…" : "Resolve"}
-      </Button>
-    );
-  }
-
-  // RESOLVED — no action
   return (
-    <span className="text-xs text-muted-foreground/60 italic">No action</span>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={(e) => e.stopPropagation()} // Prevent row click
+          className="h-8 w-8 text-muted-foreground hover:text-foreground"
+        >
+          <MoreVerticalIcon className="size-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-[160px]">
+        <DropdownMenuItem
+          onClick={(e) => {
+            e.stopPropagation();
+            router.push(`/alerts/${alert._id}`);
+          }}
+          className="cursor-pointer"
+        >
+          <EyeIcon className="mr-2" />
+          View Details
+        </DropdownMenuItem>
+        {alert.status === "TRIGGERED" && (
+          <DropdownMenuItem
+            disabled={loading}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleAction("acknowledge");
+            }}
+            className="cursor-pointer text-amber-600 focus:text-amber-600 dark:text-amber-400 dark:focus:text-amber-400"
+          >
+            <ShieldCheckIcon className="mr-2" />
+            {loading ? "Working…" : "Acknowledge"}
+          </DropdownMenuItem>
+        )}
+        {alert.status === "ACKNOWLEDGED" && (
+          <DropdownMenuItem
+            disabled={loading}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleAction("resolve");
+            }}
+            className="cursor-pointer text-emerald-600 focus:text-emerald-600 dark:text-emerald-400 dark:focus:text-emerald-400"
+          >
+            <CheckCircleIcon className="mr-2" />
+            {loading ? "Working…" : "Resolve"}
+          </DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

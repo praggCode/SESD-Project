@@ -33,6 +33,7 @@ export function LoginForm({ className, ...props }) {
       }
 
       localStorage.setItem("token", data.data.token);
+      localStorage.setItem("user", JSON.stringify(data.data.user));
       toast.success("Welcome back!", {
         description: "Redirecting you to your dashboard…",
         duration: 3000,

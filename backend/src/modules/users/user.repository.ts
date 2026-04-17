@@ -18,7 +18,7 @@ export class UserRepository {
     return await User.find().select("-password");
   }
 
-  async findByTeam(teamId: string): Promise<IUser[]> {
-    return await User.find({ team: teamId }).select("-password");
+  async findByTeamId(teamId: string): Promise<IUser[]> {
+    return await User.find({ teamId }).select("-password");
   }
 }

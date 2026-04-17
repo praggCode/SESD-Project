@@ -60,8 +60,13 @@ export class AlertService {
       `New alert created: ${alert.title} | Severity: ${alert.severity}`,
     );
 
-    const users = await this.userRepository.findAll();
-    await this.notificationService.notify(users as any, alert);
+    const users = await this.userRepository.findByTeamId(data.teamId);
+
+    if (users.length === 0) {
+      logger.warn(`No users found for team: ${data.teamId}`);
+    } else {
+      await this.notificationService.notify(users as any, alert);
+    }
 
     const policy = await this.escalationPolicyRepository.findByTeamId(
       data.teamId,

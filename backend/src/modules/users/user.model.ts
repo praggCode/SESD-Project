@@ -10,6 +10,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   role: UserRole;
+  teamId?: mongoose.Types.ObjectId;
   createdAt: Date;
 }
 
@@ -36,6 +37,10 @@ const userSchema = new Schema<IUser>(
       type: String,
       enum: Object.values(UserRole),
       default: UserRole.RESPONDER,
+    },
+    teamId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Team',
     },
   },
   {

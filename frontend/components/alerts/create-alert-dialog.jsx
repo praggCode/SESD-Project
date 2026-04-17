@@ -1,8 +1,8 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { API_URL } from "@/lib/api";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -20,7 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 export function CreateAlertDialog({ open, onOpenChange, onCreated }) {
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
@@ -28,13 +27,12 @@ export function CreateAlertDialog({ open, onOpenChange, onCreated }) {
   const [teamId, setTeamId] = useState("");
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(false);
-
   useEffect(() => {
     if (open) {
       async function fetchTeams() {
         try {
           const token = localStorage.getItem("token");
-          const res = await fetch("http://localhost:7069/api/teams", {
+          const res = await fetch(`${API_URL}/teams`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (res.ok) {
@@ -52,21 +50,18 @@ export function CreateAlertDialog({ open, onOpenChange, onCreated }) {
       fetchTeams();
     }
   }, [open]);
-
   function resetForm() {
     setTitle("");
     setMessage("");
     setSeverity("MEDIUM");
     setTeamId(teams.length > 0 ? teams[0]._id : "");
   }
-
   async function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
-
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:7069/api/alerts", {
+      const res = await fetch(`${API_URL}/alerts`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -80,12 +75,10 @@ export function CreateAlertDialog({ open, onOpenChange, onCreated }) {
           teamId,
         }),
       });
-
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.message || "Failed to create alert.");
       }
-
       toast.success("Alert created", {
         description: `"${title}" has been triggered.`,
         duration: 3000,
@@ -102,7 +95,6 @@ export function CreateAlertDialog({ open, onOpenChange, onCreated }) {
       setLoading(false);
     }
   }
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -112,9 +104,7 @@ export function CreateAlertDialog({ open, onOpenChange, onCreated }) {
             Create a new alert incident for your team.
           </DialogDescription>
         </DialogHeader>
-
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {/* Title */}
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="alert-title" className="text-sm font-medium">
               Title
@@ -129,8 +119,6 @@ export function CreateAlertDialog({ open, onOpenChange, onCreated }) {
               className="h-9 rounded-lg"
             />
           </div>
-
-          {/* Message */}
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="alert-message" className="text-sm font-medium">
               Message
@@ -145,8 +133,6 @@ export function CreateAlertDialog({ open, onOpenChange, onCreated }) {
               className="h-9 rounded-lg"
             />
           </div>
-
-          {/* Severity */}
           <div className="flex flex-col gap-1.5">
             <Label className="text-sm font-medium">Severity</Label>
             <Select value={severity} onValueChange={setSeverity}>
@@ -161,8 +147,6 @@ export function CreateAlertDialog({ open, onOpenChange, onCreated }) {
               </SelectContent>
             </Select>
           </div>
-
-          {/* Team Selection */}
           <div className="flex flex-col gap-1.5">
             <Label className="text-sm font-medium">Team</Label>
             <Select value={teamId} onValueChange={setTeamId}>
@@ -178,7 +162,6 @@ export function CreateAlertDialog({ open, onOpenChange, onCreated }) {
               </SelectContent>
             </Select>
           </div>
-
           <DialogFooter>
             <Button
               type="button"

@@ -1,8 +1,6 @@
 "use client";
-
 import { AlertCircleIcon } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-
 import {
   Table,
   TableBody,
@@ -13,27 +11,22 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-
 export function UserTable({ users, teams, loading }) {
-  // Helper to resolve team name from teamId
   const getTeamName = (teamId) => {
     if (!teamId) return "Unassigned";
-    // Check if teamId is an object (populated) or a string
     const id = typeof teamId === "object" && teamId !== null ? teamId._id : teamId;
     const team = teams.find((t) => t._id === id);
     return team ? team.name : "Unknown Team";
   };
-
   const getRoleBadgeVariant = (role) => {
     switch (role) {
       case "ADMIN":
-        return "destructive"; // Let's use destructive or a distinct color for admin
+        return "destructive"; 
       case "RESPONDER":
       default:
         return "secondary";
     }
   };
-
   if (loading) {
     return (
       <Table>
@@ -60,7 +53,6 @@ export function UserTable({ users, teams, loading }) {
       </Table>
     );
   }
-
   if (users.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -74,7 +66,6 @@ export function UserTable({ users, teams, loading }) {
       </div>
     );
   }
-
   return (
     <Table>
       <TableHeader>

@@ -1,9 +1,6 @@
 "use client"
-
 import * as React from "react"
-
 import { cn } from "@/lib/utils"
-
 function Table({
   className,
   ...props
@@ -17,7 +14,6 @@ function Table({
     </div>
   );
 }
-
 function TableHeader({
   className,
   ...props
@@ -29,7 +25,6 @@ function TableHeader({
       {...props} />
   );
 }
-
 function TableBody({
   className,
   ...props
@@ -41,7 +36,6 @@ function TableBody({
       {...props} />
   );
 }
-
 function TableFooter({
   className,
   ...props
@@ -53,7 +47,6 @@ function TableFooter({
       {...props} />
   );
 }
-
 function TableRow({
   className,
   ...props
@@ -68,7 +61,6 @@ function TableRow({
       {...props} />
   );
 }
-
 function TableHead({
   className,
   ...props
@@ -83,7 +75,6 @@ function TableHead({
       {...props} />
   );
 }
-
 function TableCell({
   className,
   ...props
@@ -98,7 +89,6 @@ function TableCell({
       {...props} />
   );
 }
-
 function TableCaption({
   className,
   ...props
@@ -110,7 +100,6 @@ function TableCaption({
       {...props} />
   );
 }
-
 export {
   Table,
   TableHeader,

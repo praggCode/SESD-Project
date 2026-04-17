@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -21,7 +20,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { ChevronsUpDownIcon, LogOutIcon } from "lucide-react";
-
 function getInitials(name) {
   if (!name) return "U";
   return name
@@ -31,12 +29,10 @@ function getInitials(name) {
     .toUpperCase()
     .slice(0, 2);
 }
-
 export function NavUser() {
   const router = useRouter();
   const { isMobile } = useSidebar();
   const [user, setUser] = useState({ name: "", email: "" });
-
   useEffect(() => {
     try {
       const stored = localStorage.getItem("user");
@@ -48,18 +44,14 @@ export function NavUser() {
         });
       }
     } catch {
-      // ignore parse errors
     }
   }, []);
-
   function handleLogout() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     router.push("/");
   }
-
   const displayName = user.name || user.email || "User";
-
   return (
     <SidebarMenu>
       <SidebarMenuItem>

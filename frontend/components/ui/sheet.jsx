@@ -1,36 +1,29 @@
 "use client"
-
 import * as React from "react"
 import { Dialog as SheetPrimitive } from "radix-ui"
-
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { XIcon } from "lucide-react"
-
 function Sheet({
   ...props
 }) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />;
 }
-
 function SheetTrigger({
   ...props
 }) {
   return <SheetPrimitive.Trigger data-slot="sheet-trigger" {...props} />;
 }
-
 function SheetClose({
   ...props
 }) {
   return <SheetPrimitive.Close data-slot="sheet-close" {...props} />;
 }
-
 function SheetPortal({
   ...props
 }) {
   return <SheetPrimitive.Portal data-slot="sheet-portal" {...props} />;
 }
-
 function SheetOverlay({
   className,
   ...props
@@ -45,7 +38,6 @@ function SheetOverlay({
       {...props} />
   );
 }
-
 function SheetContent({
   className,
   children,
@@ -77,7 +69,6 @@ function SheetContent({
     </SheetPortal>
   );
 }
-
 function SheetHeader({
   className,
   ...props
@@ -89,7 +80,6 @@ function SheetHeader({
       {...props} />
   );
 }
-
 function SheetFooter({
   className,
   ...props
@@ -101,7 +91,6 @@ function SheetFooter({
       {...props} />
   );
 }
-
 function SheetTitle({
   className,
   ...props
@@ -113,7 +102,6 @@ function SheetTitle({
       {...props} />
   );
 }
-
 function SheetDescription({
   className,
   ...props
@@ -125,7 +113,6 @@ function SheetDescription({
       {...props} />
   );
 }
-
 export {
   Sheet,
   SheetTrigger,

@@ -1,10 +1,9 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { Loader2Icon, PlusIcon, TrashIcon, XIcon, ArrowRightIcon } from "lucide-react";
-
+import { API_URL } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,12 +24,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-
 export function PolicyFormDialog({ open, onOpenChange, teamId, existingPolicy, users, onSaved }) {
   const [loading, setLoading] = useState(false);
   const [levels, setLevels] = useState([]);
-
-  // Setup form initial state based on existing or new
   useEffect(() => {
     if (open) {
       if (existingPolicy && existingPolicy.levels && existingPolicy.levels.length > 0) {
@@ -44,14 +40,12 @@ export function PolicyFormDialog({ open, onOpenChange, teamId, existingPolicy, u
       }
     }
   }, [open, existingPolicy]);
-
   const recomputeLevelNumbers = (newLevels) => {
     return newLevels.map((lvl, idx) => ({
       ...lvl,
       levelNumber: idx + 1,
     }));
   };
-
   const addLevel = () => {
     setLevels((prev) =>
       recomputeLevelNumbers([
@@ -60,7 +54,6 @@ export function PolicyFormDialog({ open, onOpenChange, teamId, existingPolicy, u
       ])
     );
   };
-
   const removeLevel = (index) => {
     setLevels((prev) => {
       const copy = [...prev];
@@ -68,7 +61,6 @@ export function PolicyFormDialog({ open, onOpenChange, teamId, existingPolicy, u
       return recomputeLevelNumbers(copy);
     });
   };
-
   const updateLevelProp = (index, prop, value) => {
     setLevels((prev) => {
       const copy = [...prev];
@@ -76,7 +68,6 @@ export function PolicyFormDialog({ open, onOpenChange, teamId, existingPolicy, u
       return copy;
     });
   };
-
   const addUserToLevel = (levelIndex, userId) => {
     setLevels((prev) => {
       const copy = [...prev];
@@ -86,7 +77,6 @@ export function PolicyFormDialog({ open, onOpenChange, teamId, existingPolicy, u
       return copy;
     });
   };
-
   const removeUserFromLevel = (levelIndex, userId) => {
     setLevels((prev) => {
       const copy = [...prev];
@@ -94,11 +84,8 @@ export function PolicyFormDialog({ open, onOpenChange, teamId, existingPolicy, u
       return copy;
     });
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Basic validation
     for (const lvl of levels) {
       if (lvl.userIds.length === 0) {
         toast.error(`Level ${lvl.levelNumber} must have at least one assigned user.`);
@@ -109,26 +96,20 @@ export function PolicyFormDialog({ open, onOpenChange, teamId, existingPolicy, u
         return;
       }
     }
-
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      
       const payload = existingPolicy ? { levels } : { teamId, levels };
-      
       const url = existingPolicy 
-        ? `http://localhost:7069/api/escalation-policies/${teamId}`
-        : `http://localhost:7069/api/escalation-policies`;
-      
+        ? `${API_URL}/escalation-policies/${teamId}`
+        : `${API_URL}/escalation-policies`;
       const method = existingPolicy ? 'put' : 'post';
-
       await axios({
         method,
         url,
         data: payload,
         headers: { Authorization: `Bearer ${token}` }
       });
-
       toast.success("Policy saved successfully");
       onSaved();
       onOpenChange(false);
@@ -140,13 +121,10 @@ export function PolicyFormDialog({ open, onOpenChange, teamId, existingPolicy, u
       setLoading(false);
     }
   };
-
-  // Helper to resolve user ID to user Name
   const getUserName = (id) => {
     const user = users.find(u => u._id === id);
     return user ? user.name : "Unknown User";
   };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] sm:max-w-[600px] flex flex-col overflow-hidden">
@@ -156,14 +134,11 @@ export function PolicyFormDialog({ open, onOpenChange, teamId, existingPolicy, u
             Configure the chain of escalation for this team.
           </DialogDescription>
         </DialogHeader>
-
-        {/* Scrollable form body */}
         <div className="flex-1 overflow-y-auto px-1 py-4">
           <form id="escalation-form" onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-4">
               {levels.map((lvl, index) => (
                 <div key={index} className="relative rounded-lg border bg-card p-4 shadow-sm">
-                  {/* Remove Button */}
                   {levels.length > 1 && (
                     <Button
                       type="button"
@@ -175,14 +150,12 @@ export function PolicyFormDialog({ open, onOpenChange, teamId, existingPolicy, u
                       <TrashIcon className="size-4" />
                     </Button>
                   )}
-
                   <div className="mb-4 font-semibold flex items-center space-x-2">
                     <Badge variant="outline" className="rounded-full h-6 w-6 p-0 flex items-center justify-center">
                       {lvl.levelNumber}
                     </Badge>
                     <span>Level {lvl.levelNumber}</span>
                   </div>
-
                   <div className="grid gap-4 sm:grid-cols-[120px_1fr]">
                     <div className="space-y-2">
                       <Label>Delay (minutes)</Label>
@@ -194,10 +167,8 @@ export function PolicyFormDialog({ open, onOpenChange, teamId, existingPolicy, u
                         disabled={loading}
                       />
                     </div>
-
                     <div className="space-y-2">
                       <Label>Assigned Users</Label>
-                      {/* Fake multiselect UI */}
                       <div className="flex flex-wrap gap-2 mb-2 p-2 min-h-11 border rounded-md bg-background">
                         {lvl.userIds.map(userId => (
                           <Badge key={userId} variant="secondary" className="flex items-center gap-1 shrink-0">
@@ -215,14 +186,12 @@ export function PolicyFormDialog({ open, onOpenChange, teamId, existingPolicy, u
                           <span className="text-sm text-muted-foreground/60 p-1">No users assigned</span>
                         )}
                       </div>
-
-                      {/* Dropdown to add unassigned users */}
                       <Select
                         disabled={loading}
                         onValueChange={(val) => {
                           if (val) addUserToLevel(index, val);
                         }}
-                        value="" // keep it reset
+                        value="" 
                       >
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Add user to level..." />
@@ -245,7 +214,6 @@ export function PolicyFormDialog({ open, onOpenChange, teamId, existingPolicy, u
                 </div>
               ))}
             </div>
-
             <Button
               type="button"
               variant="outline"
@@ -259,7 +227,6 @@ export function PolicyFormDialog({ open, onOpenChange, teamId, existingPolicy, u
             </Button>
           </form>
         </div>
-
         <DialogFooter className="pt-2">
           <Button
             type="button"

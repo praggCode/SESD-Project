@@ -1,6 +1,6 @@
 "use client";
-
 import { useState, useEffect, useCallback } from "react";
+import { API_URL } from "@/lib/api";
 import { PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,24 +19,18 @@ import {
 } from "@/components/ui/select";
 import { AlertTable } from "@/components/alerts/alert-table";
 import { CreateAlertDialog } from "@/components/alerts/create-alert-dialog";
-
 const STATUS_TABS = ["All", "TRIGGERED", "ACKNOWLEDGED", "RESOLVED"];
-
 export default function AlertsPage() {
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
-
-  // Filters
   const [statusFilter, setStatusFilter] = useState("All");
   const [severityFilter, setSeverityFilter] = useState("All");
-
-  /* ── Fetch alerts ────────────────────────────────────────── */
   const fetchAlerts = useCallback(async () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:7069/api/alerts", {
+      const res = await fetch(`${API_URL}/alerts`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Failed to fetch alerts");
@@ -48,33 +42,25 @@ export default function AlertsPage() {
       setLoading(false);
     }
   }, []);
-
   useEffect(() => {
     fetchAlerts();
   }, [fetchAlerts]);
-
-  /* ── Derived / filtered list ─────────────────────────────── */
   const filtered = alerts.filter((a) => {
     if (statusFilter !== "All" && a.status !== statusFilter) return false;
     if (severityFilter !== "All" && a.severity !== severityFilter) return false;
     return true;
   });
-
-  /* ── Tab label helper ────────────────────────────────────── */
   function tabLabel(tab) {
     if (tab === "All") return "All";
     return tab.charAt(0) + tab.slice(1).toLowerCase();
   }
-
   function tabCount(tab) {
     if (tab === "All") return alerts.length;
     return alerts.filter((a) => a.status === tab).length;
   }
-
   return (
     <div className="flex flex-1 flex-col">
       <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-8">
-        {/* Page header */}
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">
@@ -92,10 +78,7 @@ export default function AlertsPage() {
             Trigger Alert
           </Button>
         </div>
-
-        {/* Filters */}
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          {/* Status tabs */}
           <div className="flex items-center gap-1 rounded-lg bg-muted p-1">
             {STATUS_TABS.map((tab) => (
               <button
@@ -125,8 +108,6 @@ export default function AlertsPage() {
               </button>
             ))}
           </div>
-
-          {/* Severity filter */}
           <Select value={severityFilter} onValueChange={setSeverityFilter}>
             <SelectTrigger className="h-8 w-[160px] rounded-lg text-xs">
               <SelectValue placeholder="All severities" />
@@ -140,8 +121,6 @@ export default function AlertsPage() {
             </SelectContent>
           </Select>
         </div>
-
-        {/* Table card */}
         <Card className="overflow-hidden rounded-xl border border-border/60 shadow-sm p-0">
           <AlertTable
             alerts={filtered}
@@ -150,8 +129,6 @@ export default function AlertsPage() {
           />
         </Card>
       </main>
-
-      {/* Create alert dialog */}
       <CreateAlertDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
@@ -160,4 +137,3 @@ export default function AlertsPage() {
     </div>
   );
 }
-

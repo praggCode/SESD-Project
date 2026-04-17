@@ -1,6 +1,6 @@
 "use client";
-
 import { useEffect, useState, useCallback } from "react";
+import { API_URL } from "@/lib/api";
 import { 
   Card, 
   CardContent, 
@@ -30,32 +30,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PlusIcon, Trash2Icon, UsersIcon, Loader2Icon } from "lucide-react";
 import { toast } from "sonner";
-
 export default function TeamsPage() {
   const [teams, setTeams] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  
-  // Dialog state
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newTeamName, setNewTeamName] = useState("");
   const [isCreating, setIsCreating] = useState(false);
-  
-  // Delete state
   const [deletingId, setDeletingId] = useState(null);
-
   const fetchTeams = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:7069/api/teams", {
+      const res = await fetch(`${API_URL}/teams`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      
       if (!res.ok) throw new Error("Failed to fetch teams");
       const data = await res.json();
-      
-      // Ensure array, APIs generally wrap in { data: ... } or return array directly
       setTeams(data.data || data || []);
     } catch (error) {
       console.error("Error fetching teams:", error);
@@ -65,19 +56,16 @@ export default function TeamsPage() {
       setIsLoading(false);
     }
   }, []);
-
   useEffect(() => {
     fetchTeams();
   }, [fetchTeams]);
-
   const handleCreateTeam = async (e) => {
     e.preventDefault();
     if (!newTeamName.trim()) return;
-    
     setIsCreating(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:7069/api/teams", {
+      const res = await fetch(`${API_URL}/teams`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -85,9 +73,7 @@ export default function TeamsPage() {
         },
         body: JSON.stringify({ name: newTeamName.trim() }),
       });
-      
       if (!res.ok) throw new Error("Failed to create team");
-      
       toast.success("Team created");
       setNewTeamName("");
       setIsDialogOpen(false);
@@ -99,22 +85,18 @@ export default function TeamsPage() {
       setIsCreating(false);
     }
   };
-
   const handleDeleteTeam = async (id) => {
     if (!confirm("Are you sure you want to delete this team?")) return;
-    
     setDeletingId(id);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:7069/api/teams/${id}`, {
+      const res = await fetch(`${API_URL}/teams/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      
       if (!res.ok) throw new Error("Failed to delete team");
-      
       toast.success("Team deleted");
       fetchTeams();
     } catch (error) {
@@ -124,7 +106,6 @@ export default function TeamsPage() {
       setDeletingId(null);
     }
   };
-
   const formatTime = (dateString) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
@@ -134,10 +115,8 @@ export default function TeamsPage() {
       year: 'numeric'
     });
   };
-
   return (
     <div className="flex flex-1 flex-col gap-8 p-6 md:p-10 max-w-6xl mx-auto w-full">
-      {/* HEADER SECTION */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
@@ -159,7 +138,6 @@ export default function TeamsPage() {
           </Button>
         </div>
       </div>
-
       {isLoading ? (
         <Card className="rounded-xl border border-border/50 shadow-sm flex flex-col">
           <CardHeader className="pb-4">
@@ -255,8 +233,6 @@ export default function TeamsPage() {
           </CardContent>
         </Card>
       )}
-
-      {/* CREATE TEAM DIALOG */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>

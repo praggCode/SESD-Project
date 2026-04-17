@@ -1,9 +1,7 @@
 import * as React from "react"
 import { Slot } from "radix-ui"
-
 import { cn } from "@/lib/utils"
 import { ChevronRightIcon, MoreHorizontalIcon } from "lucide-react"
-
 function Breadcrumb({
   className,
   ...props
@@ -16,7 +14,6 @@ function Breadcrumb({
       {...props} />
   );
 }
-
 function BreadcrumbList({
   className,
   ...props
@@ -31,7 +28,6 @@ function BreadcrumbList({
       {...props} />
   );
 }
-
 function BreadcrumbItem({
   className,
   ...props
@@ -43,14 +39,12 @@ function BreadcrumbItem({
       {...props} />
   );
 }
-
 function BreadcrumbLink({
   asChild,
   className,
   ...props
 }) {
   const Comp = asChild ? Slot.Root : "a"
-
   return (
     <Comp
       data-slot="breadcrumb-link"
@@ -58,7 +52,6 @@ function BreadcrumbLink({
       {...props} />
   );
 }
-
 function BreadcrumbPage({
   className,
   ...props
@@ -73,7 +66,6 @@ function BreadcrumbPage({
       {...props} />
   );
 }
-
 function BreadcrumbSeparator({
   children,
   className,
@@ -92,7 +84,6 @@ function BreadcrumbSeparator({
     </li>
   );
 }
-
 function BreadcrumbEllipsis({
   className,
   ...props
@@ -109,7 +100,6 @@ function BreadcrumbEllipsis({
     </span>
   );
 }
-
 export {
   Breadcrumb,
   BreadcrumbList,

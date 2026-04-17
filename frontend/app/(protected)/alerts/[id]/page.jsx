@@ -1,7 +1,7 @@
 "use client";
-
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
+import { API_URL } from "@/lib/api";
 import Link from "next/link";
 import { toast } from "sonner";
 import { ArrowLeftIcon, ClockIcon } from "lucide-react";
@@ -15,12 +15,8 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-
-// Import existing badges
 import { StatusBadge } from "@/components/alerts/status-badge";
 import { SeverityBadge } from "@/components/alerts/severity-badge";
-
-/* ── Time helper ───────────────────────────────────────────── */
 function timeAgo(dateInput) {
   if (!dateInput) return "—";
   const now = Date.now();
@@ -34,13 +30,10 @@ function timeAgo(dateInput) {
   const days = Math.floor(hours / 24);
   return `${days} day${days !== 1 ? "s" : ""} ago`;
 }
-
 function exactTime(dateInput) {
   if (!dateInput) return "—";
   return new Date(dateInput).toLocaleString();
 }
-
-/* ── Skeleton Loader ───────────────────────────────────────── */
 function DetailSkeleton() {
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-8 flex flex-col gap-6">
@@ -63,27 +56,23 @@ function DetailSkeleton() {
     </div>
   );
 }
-
 export default function AlertDetailPage({ params }) {
   const unwrappedParams = use(params);
   const id = unwrappedParams.id;
   const router = useRouter();
-
   const [alert, setAlert] = useState(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState(null);
-
   useEffect(() => {
     fetchAlertData();
   }, [id]);
-
   async function fetchAlertData() {
     setLoading(true);
     setError(null);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:7069/api/alerts/${id}`, {
+      const res = await fetch(`${API_URL}/alerts/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Failed to load alert details");
@@ -95,24 +84,21 @@ export default function AlertDetailPage({ params }) {
       setLoading(false);
     }
   }
-
   async function handleAction(action) {
     setActionLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:7069/api/alerts/${id}/${action}`, {
+      const res = await fetch(`${API_URL}/alerts/${id}/${action}`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
-
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.message || `Failed to ${action} alert`);
       }
-
       toast.success(
         action === "acknowledge" ? "Alert acknowledged" : "Alert resolved",
         { duration: 3000 }
@@ -127,9 +113,7 @@ export default function AlertDetailPage({ params }) {
       setActionLoading(false);
     }
   }
-
   if (loading) return <DetailSkeleton />;
-
   if (error || !alert) {
     return (
       <div className="mx-auto w-full max-w-4xl px-4 py-8 flex flex-col items-center justify-center min-h-[400px]">
@@ -141,10 +125,8 @@ export default function AlertDetailPage({ params }) {
       </div>
     );
   }
-
   return (
     <div className="mx-auto w-full max-w-5xl px-6 py-8 flex flex-col gap-8">
-      {/* Back Link */}
       <Link
         href="/alerts"
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors self-start"
@@ -152,8 +134,6 @@ export default function AlertDetailPage({ params }) {
         <ArrowLeftIcon className="size-4" />
         Back to Alerts
       </Link>
-
-      {/* Header Section */}
       <div className="flex flex-col gap-4">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">
           {alert.title}
@@ -167,25 +147,19 @@ export default function AlertDetailPage({ params }) {
           </span>
         </div>
       </div>
-
-      {/* Content Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        {/* Left Col: Main Details & Actions */}
         <div className="md:col-span-2 flex flex-col gap-6">
           <Card className="shadow-sm">
             <CardHeader className="pb-3 border-b">
               <CardTitle>Incident Details</CardTitle>
             </CardHeader>
             <CardContent className="pt-6 flex flex-col gap-6">
-              
               <div className="flex flex-col gap-1.5">
                 <span className="text-sm font-medium text-muted-foreground">Message</span>
                 <p className="text-sm leading-relaxed whitespace-pre-wrap">
                   {alert.message}
                 </p>
               </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1">
                   <span className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
@@ -202,11 +176,8 @@ export default function AlertDetailPage({ params }) {
                   </span>
                 </div>
               </div>
-
             </CardContent>
           </Card>
-
-          {/* Action Section */}
           {(alert.status === "TRIGGERED" || alert.status === "ACKNOWLEDGED") && (
             <Card className="shadow-sm border-dashed">
               <CardContent className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -240,18 +211,13 @@ export default function AlertDetailPage({ params }) {
             </Card>
           )}
         </div>
-
-        {/* Right Col: Timeline */}
         <div className="md:col-span-1 flex flex-col gap-6">
           <Card className="shadow-sm">
             <CardHeader className="pb-3 border-b">
               <CardTitle>Timeline</CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
-              
               <div className="relative border-l border-border/80 ml-3 flex flex-col gap-6 pl-6">
-                
-                {/* Created */}
                 <div className="relative">
                   <span className="absolute -left-[31px] top-1 flex size-[11px] items-center justify-center rounded-full bg-foreground ring-4 ring-background"></span>
                   <div className="flex flex-col gap-0.5">
@@ -261,8 +227,6 @@ export default function AlertDetailPage({ params }) {
                     </span>
                   </div>
                 </div>
-
-                {/* Acknowledged */}
                 <div className="relative">
                   <span className={`absolute -left-[31px] top-1 flex size-[11px] items-center justify-center rounded-full ring-4 ring-background transition-colors ${alert.acknowledgedAt ? "bg-amber-500" : "bg-muted border border-border"}`}></span>
                   <div className="flex flex-col gap-0.5">
@@ -277,8 +241,6 @@ export default function AlertDetailPage({ params }) {
                     )}
                   </div>
                 </div>
-
-                {/* Resolved */}
                 <div className="relative">
                   <span className={`absolute -left-[31px] top-1 flex size-[11px] items-center justify-center rounded-full ring-4 ring-background transition-colors ${alert.resolvedAt ? "bg-emerald-500" : "bg-muted border border-border"}`}></span>
                   <div className="flex flex-col gap-0.5">
@@ -288,13 +250,10 @@ export default function AlertDetailPage({ params }) {
                     </span>
                   </div>
                 </div>
-
               </div>
-
             </CardContent>
           </Card>
         </div>
-
       </div>
     </div>
   );

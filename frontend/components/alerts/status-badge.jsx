@@ -1,8 +1,6 @@
 "use client";
-
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-
 const statusConfig = {
   TRIGGERED: {
     label: "Triggered",
@@ -17,13 +15,11 @@ const statusConfig = {
     className: "bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/20 dark:text-emerald-400 dark:ring-emerald-400/20",
   },
 };
-
 export function StatusBadge({ status }) {
   const config = statusConfig[status] || {
     label: status,
     className: "bg-muted text-muted-foreground",
   };
-
   return (
     <Badge
       variant="outline"

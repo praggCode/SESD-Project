@@ -1,5 +1,4 @@
 "use client";
-
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { NavUser } from "@/components/nav-user";
@@ -24,7 +23,6 @@ import {
   ShieldIcon,
   GitBranchIcon,
 } from "lucide-react";
-
 const navMain = [
   {
     title: "Dashboard",
@@ -37,7 +35,6 @@ const navMain = [
     icon: BellIcon,
   },
 ];
-
 const navAdmin = [
   {
     title: "Teams",
@@ -55,18 +52,14 @@ const navAdmin = [
     icon: GitBranchIcon,
   },
 ];
-
 export function AppSidebar({ ...props }) {
   const pathname = usePathname();
-
   function isActive(url) {
     if (url === "/dashboard") return pathname === "/dashboard";
     return pathname.startsWith(url);
   }
-
   return (
     <Sidebar variant="inset" {...props}>
-      {/* ── Header / Brand ──────────────────────────────────── */}
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -86,10 +79,7 @@ export function AppSidebar({ ...props }) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-
-      {/* ── Navigation ─────────────────────────────────────── */}
       <SidebarContent>
-        {/* Main */}
         <SidebarGroup>
           <SidebarGroupLabel>Main</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -111,10 +101,7 @@ export function AppSidebar({ ...props }) {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
         <SidebarSeparator />
-
-        {/* Admin */}
         <SidebarGroup>
           <SidebarGroupLabel>Admin</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -137,8 +124,6 @@ export function AppSidebar({ ...props }) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
-      {/* ── Footer / User ──────────────────────────────────── */}
       <SidebarFooter>
         <NavUser />
       </SidebarFooter>

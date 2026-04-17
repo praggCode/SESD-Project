@@ -1,10 +1,9 @@
 "use client";
-
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { PlusIcon, Loader2Icon } from "lucide-react";
-
+import { API_URL } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -23,7 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 export function CreateUserDialog({ open, onOpenChange, onCreated, teams }) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -33,23 +31,20 @@ export function CreateUserDialog({ open, onOpenChange, onCreated, teams }) {
     role: "RESPONDER",
     teamId: "",
   });
-
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.password || !formData.role) {
       toast.error("Please fill in all required fields.");
       return;
     }
-
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        "http://localhost:7069/api/users/register",
+        `${API_URL}/users/register`,
         formData,
         {
           headers: {
@@ -57,10 +52,7 @@ export function CreateUserDialog({ open, onOpenChange, onCreated, teams }) {
           },
         }
       );
-
       toast.success("User created successfully");
-      
-      // Reset form
       setFormData({
         name: "",
         email: "",
@@ -68,7 +60,6 @@ export function CreateUserDialog({ open, onOpenChange, onCreated, teams }) {
         role: "RESPONDER",
         teamId: "",
       });
-      
       onCreated();
       onOpenChange(false);
     } catch (error) {
@@ -80,7 +71,6 @@ export function CreateUserDialog({ open, onOpenChange, onCreated, teams }) {
       setLoading(false);
     }
   };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
@@ -91,7 +81,6 @@ export function CreateUserDialog({ open, onOpenChange, onCreated, teams }) {
               Add a new user to the system. Click save when you're done.
             </DialogDescription>
           </DialogHeader>
-
           <div className="grid gap-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>
@@ -103,7 +92,6 @@ export function CreateUserDialog({ open, onOpenChange, onCreated, teams }) {
                 disabled={loading}
               />
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -115,7 +103,6 @@ export function CreateUserDialog({ open, onOpenChange, onCreated, teams }) {
                 disabled={loading}
               />
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
@@ -127,7 +114,6 @@ export function CreateUserDialog({ open, onOpenChange, onCreated, teams }) {
                 disabled={loading}
               />
             </div>
-
             <div className="space-y-2">
               <Label>Role</Label>
               <Select
@@ -144,7 +130,6 @@ export function CreateUserDialog({ open, onOpenChange, onCreated, teams }) {
                 </SelectContent>
               </Select>
             </div>
-
             <div className="space-y-2">
               <Label>Team (Optional)</Label>
               <Select
@@ -156,7 +141,6 @@ export function CreateUserDialog({ open, onOpenChange, onCreated, teams }) {
                   <SelectValue placeholder="Select a team" />
                 </SelectTrigger>
                 <SelectContent>
-                  {/* Allow clearing selection by adding a none option if needed */}
                   {teams.map((team) => (
                     <SelectItem key={team._id} value={team._id}>
                       {team.name}
@@ -171,7 +155,6 @@ export function CreateUserDialog({ open, onOpenChange, onCreated, teams }) {
               </Select>
             </div>
           </div>
-
           <DialogFooter>
             <Button
               type="button"

@@ -1,7 +1,7 @@
 "use client";
-
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { API_URL } from "@/lib/api";
 import { 
   Card, 
   CardContent, 
@@ -29,27 +29,22 @@ import {
   RefreshCw,
   ArrowRight
 } from "lucide-react";
-
 export default function DashboardPage() {
   const router = useRouter();
   const [alerts, setAlerts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-
   const fetchAlerts = useCallback(async (showRefreshIndicator = false) => {
     if (showRefreshIndicator) setIsRefreshing(true);
-    
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:7069/api/alerts", {
+      const res = await fetch(`${API_URL}/alerts`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      
       if (!res.ok) throw new Error("Failed to fetch");
       const data = await res.json();
-      
       setAlerts(data.data || data || []);
     } catch (error) {
       console.error("Error fetching alerts:", error);
@@ -59,35 +54,26 @@ export default function DashboardPage() {
       setIsRefreshing(false);
     }
   }, []);
-
   useEffect(() => {
     fetchAlerts();
-    
-    // Auto refresh every 15 seconds
     const interval = setInterval(() => {
       fetchAlerts();
     }, 15000);
-    
     return () => clearInterval(interval);
   }, [fetchAlerts]);
-
-  // Derived state
   const totalAlerts = alerts.length;
   const triggeredAlerts = alerts.filter((a) => a.status === "TRIGGERED").length;
   const acknowledgedAlerts = alerts.filter((a) => a.status === "ACKNOWLEDGED").length;
   const resolvedAlerts = alerts.filter((a) => a.status === "RESOLVED").length;
-
   const severityCounts = {
     CRITICAL: alerts.filter((a) => a.severity === "CRITICAL").length,
     HIGH: alerts.filter((a) => a.severity === "HIGH").length,
     MEDIUM: alerts.filter((a) => a.severity === "MEDIUM").length,
     LOW: alerts.filter((a) => a.severity === "LOW").length,
   };
-
   const recentAlerts = [...alerts]
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     .slice(0, 5);
-
   const formatTime = (dateString) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
@@ -98,10 +84,8 @@ export default function DashboardPage() {
       minute: "2-digit",
     });
   };
-
   return (
     <div className="flex flex-1 flex-col gap-8 p-6 md:p-10 max-w-7xl mx-auto w-full">
-      {/* HEADER SECTION */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
@@ -124,7 +108,6 @@ export default function DashboardPage() {
           </Button>
         </div>
       </div>
-
       {isLoading ? (
         <div className="space-y-8">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -139,7 +122,6 @@ export default function DashboardPage() {
         </div>
       ) : (
         <>
-          {/* TOP STATS CARDS */}
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             <Card className="rounded-xl border border-border/50 shadow-sm transition-all duration-200 hover:shadow-md hover:border-border/80">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -156,7 +138,6 @@ export default function DashboardPage() {
                 </div>
               </CardContent>
             </Card>
-
             <Card className="rounded-xl border border-border/50 shadow-sm transition-all duration-200 hover:shadow-md hover:border-red-500/30">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-[13px] font-semibold text-muted-foreground uppercase tracking-wider">
@@ -172,7 +153,6 @@ export default function DashboardPage() {
                 </div>
               </CardContent>
             </Card>
-
             <Card className="rounded-xl border border-border/50 shadow-sm transition-all duration-200 hover:shadow-md hover:border-amber-500/30">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-[13px] font-semibold text-muted-foreground uppercase tracking-wider">
@@ -188,7 +168,6 @@ export default function DashboardPage() {
                 </div>
               </CardContent>
             </Card>
-
             <Card className="rounded-xl border border-border/50 shadow-sm transition-all duration-200 hover:shadow-md hover:border-emerald-500/30">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-[13px] font-semibold text-muted-foreground uppercase tracking-wider">
@@ -205,9 +184,7 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
           </div>
-
           <div className="grid gap-6 md:grid-cols-3">
-            {/* SEVERITY BREAKDOWN */}
             <Card className="md:col-span-1 rounded-xl border border-border/50 shadow-sm transition-all duration-200 hover:shadow-md hover:border-border/80 flex flex-col">
               <CardHeader className="pb-4">
                 <CardTitle className="text-lg font-semibold tracking-tight text-foreground">
@@ -233,8 +210,6 @@ export default function DashboardPage() {
                 </div>
               </CardContent>
             </Card>
-
-            {/* RECENT ALERTS */}
             <Card className="md:col-span-2 rounded-xl border border-border/50 shadow-sm transition-all duration-200 hover:shadow-md hover:border-border/80 flex flex-col">
               <CardHeader className="pb-4 flex flex-row items-center justify-between">
                 <div>

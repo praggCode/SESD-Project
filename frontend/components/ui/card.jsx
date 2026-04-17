@@ -1,7 +1,5 @@
 import * as React from "react"
-
 import { cn } from "@/lib/utils"
-
 function Card({
   className,
   size = "default",
@@ -18,7 +16,6 @@ function Card({
       {...props} />
   );
 }
-
 function CardHeader({
   className,
   ...props
@@ -33,7 +30,6 @@ function CardHeader({
       {...props} />
   );
 }
-
 function CardTitle({
   className,
   ...props
@@ -48,7 +44,6 @@ function CardTitle({
       {...props} />
   );
 }
-
 function CardDescription({
   className,
   ...props
@@ -60,7 +55,6 @@ function CardDescription({
       {...props} />
   );
 }
-
 function CardAction({
   className,
   ...props
@@ -75,7 +69,6 @@ function CardAction({
       {...props} />
   );
 }
-
 function CardContent({
   className,
   ...props
@@ -87,7 +80,6 @@ function CardContent({
       {...props} />
   );
 }
-
 function CardFooter({
   className,
   ...props
@@ -102,7 +94,6 @@ function CardFooter({
       {...props} />
   );
 }
-
 export {
   Card,
   CardHeader,

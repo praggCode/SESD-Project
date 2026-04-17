@@ -1,5 +1,4 @@
 "use client";
-
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -13,8 +12,6 @@ import {
 import { StatusBadge } from "@/components/alerts/status-badge";
 import { SeverityBadge } from "@/components/alerts/severity-badge";
 import { ActionButtons } from "@/components/alerts/action-buttons";
-
-/* ── Relative time helper ─────────────────────────────────── */
 function timeAgo(dateStr) {
   const now = Date.now();
   const then = new Date(dateStr).getTime();
@@ -27,8 +24,6 @@ function timeAgo(dateStr) {
   const days = Math.floor(hours / 24);
   return `${days}d ago`;
 }
-
-/* ── Loading skeleton rows ────────────────────────────────── */
 function TableSkeleton() {
   return Array.from({ length: 5 }).map((_, i) => (
     <TableRow key={i}>
@@ -40,8 +35,6 @@ function TableSkeleton() {
     </TableRow>
   ));
 }
-
-/* ── Empty state ──────────────────────────────────────────── */
 function EmptyState() {
   return (
     <TableRow>
@@ -57,11 +50,8 @@ function EmptyState() {
     </TableRow>
   );
 }
-
-/* ── Main component ───────────────────────────────────────── */
 export function AlertTable({ alerts, loading, onRefresh }) {
   const router = useRouter();
-
   return (
     <Table>
       <TableHeader>

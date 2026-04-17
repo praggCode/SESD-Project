@@ -1,26 +1,22 @@
 "use client";
-
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
+import { API_URL } from "@/lib/api";
 import { PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { UserTable } from "@/components/users/user-table";
 import { CreateUserDialog } from "@/components/users/create-user-dialog";
 import { toast } from "sonner";
-
 export default function UsersPage() {
   const [users, setUsers] = useState([]);
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
-
-  // Fetch Teams so we can resolve teamId to team name in the table
-  // and load the select dropdown for user creation.
   const fetchTeams = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:7069/api/teams", {
+      const res = await axios.get(`${API_URL}/teams`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTeams(res.data?.data || []);
@@ -29,13 +25,11 @@ export default function UsersPage() {
       toast.error("Failed to load teams");
     }
   }, []);
-
-  // Fetch Users
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:7069/api/users", {
+      const res = await axios.get(`${API_URL}/users`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUsers(res.data?.data || []);
@@ -46,16 +40,13 @@ export default function UsersPage() {
       setLoading(false);
     }
   }, []);
-
   useEffect(() => {
     fetchTeams();
     fetchUsers();
   }, [fetchTeams, fetchUsers]);
-
   return (
     <div className="flex flex-1 flex-col">
       <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-8">
-        {/* Page Header */}
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">
@@ -73,8 +64,6 @@ export default function UsersPage() {
             Create User
           </Button>
         </div>
-
-        {/* Table Card */}
         <Card className="overflow-hidden rounded-xl border border-border/60 shadow-sm p-0">
           <UserTable
             users={users}
@@ -83,8 +72,6 @@ export default function UsersPage() {
           />
         </Card>
       </main>
-
-      {/* Create User Dialog */}
       <CreateUserDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}

@@ -1,8 +1,8 @@
 "use client";
-
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { API_URL } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { MoreVerticalIcon, CheckCircleIcon, ShieldCheckIcon, EyeIcon } from "lucide-react";
 import {
@@ -11,17 +11,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
 export function ActionButtons({ alert, onActionComplete }) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
   async function handleAction(action) {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `http://localhost:7069/api/alerts/${alert._id}/${action}`,
+        `${API_URL}/alerts/${alert._id}/${action}`,
         {
           method: "PATCH",
           headers: {
@@ -30,12 +28,10 @@ export function ActionButtons({ alert, onActionComplete }) {
           },
         }
       );
-
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.message || `Failed to ${action} alert.`);
       }
-
       toast.success(
         action === "acknowledge" ? "Alert acknowledged" : "Alert resolved",
         { duration: 3000 }
@@ -50,14 +46,13 @@ export function ActionButtons({ alert, onActionComplete }) {
       setLoading(false);
     }
   }
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
           size="icon"
-          onClick={(e) => e.stopPropagation()} // Prevent row click
+          onClick={(e) => e.stopPropagation()} 
           className="h-8 w-8 text-muted-foreground hover:text-foreground"
         >
           <MoreVerticalIcon className="size-4" />

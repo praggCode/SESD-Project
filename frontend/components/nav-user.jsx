@@ -55,7 +55,7 @@ export function NavUser() {
   function handleLogout() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    router.push("/login");
+    router.push("/");
   }
 
   const displayName = user.name || user.email || "User";

@@ -5,7 +5,29 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import { Separator } from "@/components/ui/separator";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
+import { useState, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { isAuthenticated } from "@/lib/auth";
+
 export default function DashboardLayout({ children }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [isChecking, setIsChecking] = useState(true);
+
+  useEffect(() => {
+    // Check authentication on mount and path changes
+    if (!isAuthenticated()) {
+      router.push("/login");
+    } else {
+      setIsChecking(false);
+    }
+  }, [router, pathname]);
+
+  // Prevent UI flickering before check completes
+  if (isChecking) {
+    return null;
+  }
+
   return (
     <TooltipProvider>
       <SidebarProvider>

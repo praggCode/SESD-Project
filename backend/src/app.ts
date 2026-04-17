@@ -12,8 +12,9 @@ const app: Application = express();
 
 app.use(helmet());
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' ? '' : '*',
+  origin: process.env.NODE_ENV === 'production' ? process.env.FRONTEND_URL : '*',
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  credentials: true,
 }));
 
 const limiter = rateLimit({

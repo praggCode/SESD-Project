@@ -38,7 +38,7 @@ export function LoginForm({ className, ...props }) {
         description: "Redirecting you to your dashboard…",
         duration: 3000,
       });
-      setTimeout(() => router.push("/"), 900);
+      setTimeout(() => router.push("/dashboard"), 900);
     } catch (err) {
       toast.error("Login failed", {
         description: err.message || "Something went wrong. Please try again.",

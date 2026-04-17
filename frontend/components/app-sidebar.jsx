@@ -28,7 +28,7 @@ import {
 const navMain = [
   {
     title: "Dashboard",
-    url: "/",
+    url: "/dashboard",
     icon: LayoutDashboardIcon,
   },
   {
@@ -60,7 +60,7 @@ export function AppSidebar({ ...props }) {
   const pathname = usePathname();
 
   function isActive(url) {
-    if (url === "/") return pathname === "/";
+    if (url === "/dashboard") return pathname === "/dashboard";
     return pathname.startsWith(url);
   }
 
@@ -71,7 +71,7 @@ export function AppSidebar({ ...props }) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link href="/">
+              <Link href="/dashboard">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <ShieldIcon className="size-4" />
                 </div>
